@@ -3,6 +3,37 @@
 {% block title %}Access Denied{% endblock %}
 
 {% block content %}
-    <h1>Access Denied</h1>
-    <p>You do not have permission to access this page.</p>
+    <h1>Paginas web denegadas</h1>
+    <p>Las sesiones no guardarán tu actividad cuando estés en estas páginas web</p>
+    
+    <h1>Lista de URLS denegadas</h1>
+    <input type="text" id="urlInput" placeholder="Ingresa una URL" />
+    <button id="addUrlButton">Agregar</button>
+    <ul id="urlList"></ul>
+
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const addUrlButton = document.getElementById('addUrlButton');
+        const urlList = document.getElementById('urlList');
+
+        addUrlButton.addEventListener('click', () => {
+        const url = urlInput.value.trim();
+
+        if (url) {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = url.startsWith('http') ? url : `https://${url}`;
+            link.textContent = url;
+            link.target = '_blank';
+            listItem.appendChild(link);
+
+            urlList.appendChild(listItem);
+
+            urlInput.value = '';
+        } else {
+            alert('Por favor, ingresa una URL válida.');
+        }
+        });
+    </script>
+    
 {% endblock %}

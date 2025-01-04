@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Main Page{% endblock %}
+
+{% block content %}
+    <h1>Bienvenido a UBU Replay</h1>
+    <p>
+        Haz click en 
+        <a href="{{ url_for('register') }}">Registrarme</a> 
+        si es la primera vez que utilizas UBU Replay, o 
+        <a href="{{ url_for('login') }}">Inicia sesión</a>
+         si ya lo has hecho con anterioridad
+    </p>
+    <button onclick="location.href='/register'">Registrarme</button>
+    <button onclick="location.href='/login'">Iniciar sesión</button>
+{% endblock %}

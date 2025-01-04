@@ -1,4 +1,4 @@
-from models import Base, User, Session, SitioWeb, Webs, SitioWebSession, WebDenegadas
+from app.utils.models import Base, User, Session, SitioWeb, Webs, SitioWebSession, WebDenegadas
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -81,6 +81,32 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
             return user
+
+    def delete_all_users(self):
+        sesion = self.get_sesion()
+        try:
+            sesion.query(User).delete()
+            sesion.commit()
+            print("Todos los usuarios han sido eliminados.")
+        except Exception as e:
+            print(f"Error al eliminar todos los usuarios: {e}")
+        except SQLAlchemyError as e:
+            print(f"Error de SQLAlchemy: {e}")
+        finally:
+            self.close_sesion(sesion)
+        
+    def verify_user(self, username, password):
+        sesion = self.get_sesion()
+        user = None
+        try:
+            user = sesion.query(User).filter_by(username=username).first()
+            if user and user.check_password(password):
+                return user
+        except Exception as e:
+            print(f"Error al verificar el usuario: {e}")
+        finally:
+            self.close_sesion(sesion)
+        return None 
 
 
     def insert_newSitioWeb(self, main_url):
@@ -231,7 +257,19 @@ class SingleConexionBD:
         except SQLAlchemyError as e:
             print(f"Error de SQLAlchemy: {e}")
         finally:
+            self.close_sesion(sesion) 
+
+
+    def get_all_denied_sites(self):
+        sesion = self.get_sesion()
+        denied_sites = None
+        try:
+            denied_sites = sesion.query(WebDenegadas).all()
+        except Exception as e:
+            print(f"Error al consultar los sitios web denegados: {e}")
+        finally:
             self.close_sesion(sesion)
+            return denied_sites              
 
 
     def selectBool_sitioWeb_denegado(self, sitioWeb_id):
