@@ -135,4 +135,11 @@ def create_app():
         return render_template('view_session.html', interactions=interactions)
 
 
+    @app.route('/api', methods=['POST']) # Esto no funciona todavia 
+    def api():
+        data = request.get_json()
+        print(f'Data received: {data}')
+        return jsonify({'status': 'success', 'message': 'Data received successfully'})
+
+
     return app
