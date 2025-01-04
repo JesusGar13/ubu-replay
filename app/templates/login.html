@@ -3,15 +3,22 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+
+    <nav style="text-align: right;">
+        <ul style="list-style-type: none; margin: 10; padding: 0;">
+            <li style="display: inline; margin-right: 10px;"><a href="{{ url_for('home') }}">Volver a Inicio</a></li>
+        </ul>
+    </nav>
+
     <h1>Login</h1>
     <p>¿Todavía no tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate</a></p>
     <form method="POST" action="{{ url_for('login') }}">
-        <label for="username">Username:</label>
+        <label for="username">Nombre de usuario:</label>
         <input type="text" id="username" name="username" required><br>
 
-        <label for="password">Password:</label>
+        <label for="password">Contraseña:</label>
         <input type="password" id="password" name="password" required><br>
 
-        <input type="submit" value="Login">
+        <input type="submit" value="Iniciar sesión">
     </form>
 {% endblock %}

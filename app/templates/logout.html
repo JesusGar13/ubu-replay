@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="logout-container">
+        <h2>¿Estás seguro de que quieres cerrar sesión?</h2>
+        <form method="post" action="{{ url_for('logout') }}">
+            <button type="submit">Sí, cerrar sesión</button>
+            <a href="{{ url_for('user_main') }}">No, volver a la página principal</a>
+        </form>
+    </div>
+{% endblock %}
