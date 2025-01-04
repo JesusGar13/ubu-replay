@@ -283,6 +283,17 @@ class SingleConexionBD:
             self.close_sesion(sesion)
             return denegado 
 
+    def remove_sitioWeb_denegado(self, site_id):
+        sesion = self.get_sesion()
+        try:
+            sitio_web = sesion.query(WebDenegadas).filter_by(sitio_web_id=site_id).first()
+            if sitio_web:
+                sesion.delete(sitio_web)
+                sesion.commit()
+        except Exception as e:
+            print(f"Error al eliminar sitio denegado: {e}")
+        finally:
+            self.close_sesion(sesion)
 
         
 

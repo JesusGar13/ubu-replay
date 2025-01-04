@@ -17,32 +17,53 @@
         const urlList = document.getElementById('urlList');
 
         addUrlButton.addEventListener('click', () => {
-        const url = urlInput.value.trim();
+            const url = urlInput.value.trim();
 
-        if (url) {
-            fetch('/denied_web', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ url })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<a href="${url}" target="_blank">${url}</a>
-                                          <button class="remove-button">Eliminar</button>`;
-                    urlList.appendChild(listItem);
-                    urlInput.value = '';
-                } else {
-                    alert(data.error || 'Error al agregar la URL.');
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        } else {
-            alert('Por favor, ingresa una URL válida.');
-        }
+            if (url) {
+                fetch('/denied_web', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${url}" target="_blank">${url}</a>
+                                            <button class="remove-button">Eliminar</button>`;
+                        urlList.appendChild(listItem);
+                        urlInput.value = '';
+                    } else {
+                        alert(data.error || 'Error al agregar la URL.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('Por favor, ingresa una URL válida.');
+            }
+        });
+
+        // Eliminar URL
+        urlList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-button')) {
+                const listItem = event.target.closest('li');
+                const siteId = listItem.dataset.id;
+
+                fetch(`/denied_web/${siteId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        listItem.remove();
+                    } else {
+                        alert(data.error || 'Error al eliminar la URL.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
         });
     </script>
     
