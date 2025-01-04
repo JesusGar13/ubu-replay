@@ -2,7 +2,7 @@ from app.utils.models import Base, User, Session, SitioWeb, Webs, SitioWebSessio
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-
+from sqlalchemy.exc import SQLAlchemyError
 
 class SingleConexionBD:
     _instance = None
