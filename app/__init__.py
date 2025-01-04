@@ -49,7 +49,27 @@ def create_app():
 
     @app.route('/tracking/track_session')
     def track_session():
-        return render_template('track_session.html')
+        # Crear una instancia de la conexión a la base de datos
+        db = SingleConexionBD()
+        user_id = 1  # Puedes usar el ID del usuario autenticado en lugar de este valor fijo.
+        global redo_history
+        
+        # Obtener las sesiones del usuario
+        sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
+
+        # Formatear los datos para enviarlos al template
+        session_list = []
+        for sesion in sesiones:
+            session_list.append({
+                "id": sesion.id,
+                "sitio_web": sesion.sitio_web.main_url if sesion.sitio_web else "Desconocido",
+                "sitio_web_id": sesion.sitio_web.id if sesion.sitio_web else None,
+                "time_start": sesion.time_start.strftime("%Y-%m-%d %H:%M:%S"),
+                "time_end": sesion.time_end.strftime("%Y-%m-%d %H:%M:%S"),
+            })
+
+        # Renderizar el template con las sesiones
+        return render_template('track_session.html', sessions=session_list)
 
     @app.route('/denied_web')
     def denied_web():

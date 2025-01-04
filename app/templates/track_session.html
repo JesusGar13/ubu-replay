@@ -1,8 +1,32 @@
 {% extends 'base.html' %}
 
-{% block title %}Track Session{% endblock %}
+{% block title %}Tracking de Sesiones{% endblock %}
 
 {% block content %}
-    <h1>Track Session</h1>
-    <p>Here you can track the session details.</p>
+<h1>Tracking de Sesiones</h1>
+<p>A continuación, se muestran las sesiones activas organizadas por sitios web.</p>
+
+<table border="1" cellpadding="5">
+    <thead>
+        <tr>
+            <th>Sitio Web</th>
+            <th>Fecha y Hora de Inicio</th>
+            <th>Fecha y Hora de Fin</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for session in sessions %}
+        <tr>
+            <td><a href="/site/{{ session.sitio_web_id }}">{{ session.sitio_web }}</a></td>
+            <td>{{ session.time_start }}</td>
+            <td>{{ session.time_end }}</td>
+            <td>
+                <a href="/session/{{ session.id }}">Reproducir Sesión</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}
