@@ -1,0 +1,6 @@
+<h1>Reproducción de Sesión</h1>
+<div id="session-player">
+    {% for interaction in interactions %}
+    <p>{{ interaction.timestamp }} - {{ interaction.event_type }} - {{ interaction.details }}</p>
+    {% endfor %}
+</div>

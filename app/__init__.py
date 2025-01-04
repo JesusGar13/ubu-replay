@@ -111,5 +111,13 @@ def create_app():
     @app.route('/denied_web')
     def denied_web():
         return render_template('denied_web.html')
+    
+    @app.route('/session/<int:session_id>')
+    def view_session(session_id):
+        db = SingleConexionBD()
+        interactions = db.get_interactions_by_session(session_id)
+        
+        return render_template('view_session.html', interactions=interactions)
+
 
     return app
