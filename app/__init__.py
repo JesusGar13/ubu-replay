@@ -86,6 +86,27 @@ def create_app():
 
         # Renderizar el template con las sesiones
         return render_template('track_session.html', sessions=session_list)
+    
+    @app.route('/api/track', methods=['POST'])
+    def track_interactions():
+        data = request.json
+        db = SingleConexionBD()
+        
+        # Aquí debes procesar y guardar las interacciones en la base de datos
+        try:
+            user_id = data['user_id']
+            sitio_web = data['site_url']
+            interactions = data['interactions']  # Lista de interacciones
+            
+            # Inserta las interacciones en la base de datos
+            for interaction in interactions:
+                # Guardar interacción (ejemplo)
+                db.insert_interaction(user_id, sitio_web, interaction)
+            
+            return jsonify({'message': 'Interacciones registradas correctamente'}), 201
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+
 
     @app.route('/denied_web')
     def denied_web():
