@@ -108,9 +108,24 @@ def create_app():
             return jsonify({'error': str(e)}), 400
 
 
-    @app.route('/denied_web')
+    @app.route('/denied_web', methods=['GET', 'POST'])
     def denied_web():
-        return render_template('denied_web.html')
+        db = SingleConexionBD()
+
+        if request.method == 'POST':
+            site_url = request.json.get('url')
+            if site_url:
+                # Inserta la URL en la base de datos
+                db.insert_sitioWeb_denegado(site_url)
+                return jsonify({'message': 'URL denegada agregada correctamente'}), 201
+            return jsonify({'error': 'URL no válida'}), 400
+
+        # Obtener la lista de URLs denegadas desde la base de datos
+        denied_sites = db.get_all_denied_sites()
+        denied_sites_list = [{'id': site.id, 'main_url': site.main_url} for site in denied_sites]
+
+        return render_template('denied_web.html', denied_sites=denied_sites_list)
+
     
     @app.route('/session/<int:session_id>')
     def view_session(session_id):

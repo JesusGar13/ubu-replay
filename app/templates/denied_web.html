@@ -20,16 +20,26 @@
         const url = urlInput.value.trim();
 
         if (url) {
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = url.startsWith('http') ? url : `https://${url}`;
-            link.textContent = url;
-            link.target = '_blank';
-            listItem.appendChild(link);
-
-            urlList.appendChild(listItem);
-
-            urlInput.value = '';
+            fetch('/denied_web', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<a href="${url}" target="_blank">${url}</a>
+                                          <button class="remove-button">Eliminar</button>`;
+                    urlList.appendChild(listItem);
+                    urlInput.value = '';
+                } else {
+                    alert(data.error || 'Error al agregar la URL.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         } else {
             alert('Por favor, ingresa una URL válida.');
         }
