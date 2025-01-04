@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from app.utils.UserManager import UserManager
+from app.utils import UserManager
 from app.utils.SingleConexionBD import SingleConexionBD
 
 def create_app():
@@ -45,7 +45,23 @@ def create_app():
 
     @app.route('/tracking')
     def tracking():
-        return render_template('tracking.html')
+        db = SingleConexionBD()
+        user_id = 1  # Cambiar según el usuario autenticado
+
+        # Obtener el conteo de sesiones por sitio web
+        tracked_sites = []
+        site_sessions = db.selectAll_countSession_from_SitioWeb(user_id)
+
+        # Formatear los datos para el template
+        for site_url, num_sessions in site_sessions.items():
+            sitio_web = db.select_SitioWeb(site_url)  # Obtener el objeto SitioWeb
+            tracked_sites.append({
+                "id": sitio_web.id,
+                "main_url": site_url,
+                "num_sessions": num_sessions
+            })
+
+        return render_template('tracking.html', tracked_sites=tracked_sites)
 
     @app.route('/tracking/track_session')
     def track_session():
