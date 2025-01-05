@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Mi Extensión de Seguimiento",
+  "version": "1.0",
+  "description": "Extensión para enviar datos de navegación a una API de Flask",
+  "permissions": [
+    "tabs",
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:5000/*"
+  ]
+}

@@ -17,22 +17,53 @@
         const urlList = document.getElementById('urlList');
 
         addUrlButton.addEventListener('click', () => {
-        const url = urlInput.value.trim();
+            const url = urlInput.value.trim();
 
-        if (url) {
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = url.startsWith('http') ? url : `https://${url}`;
-            link.textContent = url;
-            link.target = '_blank';
-            listItem.appendChild(link);
+            if (url) {
+                fetch('/denied_web', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${url}" target="_blank">${url}</a>
+                                            <button class="remove-button">Eliminar</button>`;
+                        urlList.appendChild(listItem);
+                        urlInput.value = '';
+                    } else {
+                        alert(data.error || 'Error al agregar la URL.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('Por favor, ingresa una URL válida.');
+            }
+        });
 
-            urlList.appendChild(listItem);
+        // Eliminar URL
+        urlList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-button')) {
+                const listItem = event.target.closest('li');
+                const siteId = listItem.dataset.id;
 
-            urlInput.value = '';
-        } else {
-            alert('Por favor, ingresa una URL válida.');
-        }
+                fetch(`/denied_web/${siteId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        listItem.remove();
+                    } else {
+                        alert(data.error || 'Error al eliminar la URL.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
         });
     </script>
     

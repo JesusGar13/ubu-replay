@@ -4,5 +4,26 @@
 
 {% block content %}
     <h1>Tracking</h1>
-    <p>This page provides tracking information of the user sessions.</p>
+    <p>A continuación, se muestra el listado de los sitios web rastreados y la cantidad de sesiones asociadas:</p>
+
+    <table border="1" cellpadding="5">
+        <thead>
+            <tr>
+                <th>Sitio Web</th>
+                <th>Número de Sesiones</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for site in tracked_sites %}
+            <tr>
+                <td><a href="/tracking/site/{{ site['id'] }}">{{ site['main_url'] }}</a></td>
+                <td>{{ site['num_sessions'] }}</td>
+                <td>
+                    <a href="/tracking/site/{{ site['id'] }}">Ver Sesiones</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
