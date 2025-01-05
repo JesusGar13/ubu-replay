@@ -16,8 +16,10 @@ class User(Base, UserMixin):
     username: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
+    web_denegadas: Mapped[List["WebDenegadas"]] = relationship(back_populates="user")
 
     sessions: Mapped[List["Session"]] = relationship(back_populates="user")
+    
 
     def set_password(self, password: str) -> None:
         self.password_hash = generate_password_hash(password)
@@ -79,7 +81,9 @@ class WebDenegadas(Base):
     __tablename__ = "web_denegadas"
     id: Mapped[int] = mapped_column(primary_key=True)
     sitio_web_id: Mapped[int] = mapped_column(ForeignKey("sitio_web.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
 
     sitio_web: Mapped["SitioWeb"] = relationship(back_populates="web_denegadas")
+    user: Mapped["User"] = relationship(back_populates="web_denegadas")
 
 

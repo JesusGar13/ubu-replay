@@ -1,4 +1,4 @@
-from flask import flash, Flask, render_template, request, redirect, url_for, jsonify
+from flask import flash, Flask, render_template, request, redirect, url_for, jsonify, session
 from app.utils.userManager import UserManager
 from app.utils.SingleConexionBD import SingleConexionBD
 
@@ -6,10 +6,13 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = 'your_secret_key'
 
+
     db = SingleConexionBD()
+    db.delete_all()
     db.create_tablas()
     db.delete_all_users()
-    user_manager = UserManager()
+
+    user_manager = UserManager(db)
 
     @app.route('/')
     def home():
@@ -112,20 +115,32 @@ def create_app():
 
     @app.route('/denied_web', methods=['GET', 'POST'])
     def denied_web():
+        #db = SingleConexionBD()
+
+        if 'user_id' not in session:
+            flash('Por favor, inicia sesión primero.')
+            return redirect(url_for('login'))
+
+        user_id = session['user_id']
 
         if request.method == 'POST':
-            site_url = request.json.get('url')
-            if site_url:
-                # Inserta la URL en la base de datos
-                db.insert_sitioWeb_denegado(site_url)
-                return jsonify({'message': 'URL denegada agregada correctamente'}), 201
-            return jsonify({'error': 'URL no válida'}), 400
+            url = request.form['url']
+            sitio_web = db.select_SitioWeb(main_url=url)
+            if not sitio_web:
+                db.insert_newSitioWeb(main_url=url)
+                sitio_web = db.select_SitioWeb(main_url=url)
+            db.insert_sitioWeb_denegado(sitioWeb_id=sitio_web.id, user_id=user_id)
+            flash('Sitio web denegado agregado correctamente')
+            return redirect(url_for('denied_web'))
 
-        # Obtener la lista de URLs denegadas desde la base de datos
-        denied_sites = db.get_all_denied_sites()
-        denied_sites_list = [{'id': site.id, 'main_url': site.main_url} for site in denied_sites]
+        denied_sites = db.get_denied_sites_by_user(user_id)
+        return render_template('denied_web.html', denied_sites=denied_sites)
 
-        return render_template('denied_web.html', denied_sites=denied_sites_list)
+    @app.route('/remove_denied_site/<int:site_id>', methods=['POST'])
+    def remove_denied_site(site_id):
+        db.remove_sitioWeb_denegado(site_id)
+        flash('Sitio web denegado eliminado correctamente')
+        return redirect(url_for('denied_web'))
 
     
     @app.route('/session/<int:session_id>')

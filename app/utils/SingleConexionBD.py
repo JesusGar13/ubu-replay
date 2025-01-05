@@ -82,6 +82,20 @@ class SingleConexionBD:
             self.close_sesion(sesion)
             return user
 
+
+    def get_user_id(self, username):
+        sesion = self.get_sesion()
+        user_id = None
+        try:
+            user = sesion.query(User).filter_by(username=username).first()
+            if user:
+                user_id = user.id
+        except Exception as e:
+            print(f"Error al obtener el user_id: {e}")
+        finally:
+            self.close_sesion(sesion)
+        return user_id
+
     def delete_all_users(self):
         sesion = self.get_sesion()
         try:
@@ -244,22 +258,49 @@ class SingleConexionBD:
         return sessions
 
 
-    def insert_sitioWeb_denegado(self, sitioWeb_id):
+    def insert_sitioWeb_denegado(self, sitioWeb_id, user_id):
         sesion = self.get_sesion()
         try:
             existe_sitioWeb = sesion.query(SitioWeb).filter_by(id=sitioWeb_id).first()
             if existe_sitioWeb is not None:
-                new_webDenegada = WebDenegadas(sitio_web_id=sitioWeb_id)
+                new_webDenegada = WebDenegadas(sitio_web_id=sitioWeb_id, user_id=user_id)
                 sesion.add(new_webDenegada)
                 sesion.commit()
         except Exception as e:
             print(f"Error al insertar un sitio web denegado: {e}")
+            sesion.rollback()
         except SQLAlchemyError as e:
             print(f"Error de SQLAlchemy: {e}")
         finally:
             self.close_sesion(sesion) 
 
 
+    def get_denied_sites_by_user(self, user_id):
+        sesion = self.get_sesion()
+        try:
+            denied_sites = sesion.query(WebDenegadas).options(joinedload(WebDenegadas.sitio_web)).filter_by(user_id=user_id).all()
+            print(denied_sites)
+            return denied_sites
+        except Exception as e:
+            print(f"Error al obtener sitios web denegados por usuario: {e}")
+            return []
+        finally:
+            self.close_sesion(sesion)
+
+    def remove_sitioWeb_denegado(self, site_id):
+        sesion = self.get_sesion()
+        try:
+            sitio_web = sesion.query(WebDenegadas).filter_by(id=site_id).first()
+            if sitio_web:
+                sesion.delete(sitio_web)
+                sesion.commit()
+        except Exception as e:
+            print(f"Error al eliminar sitio denegado: {e}")
+            sesion.rollback()
+        finally:
+            self.close_sesion(sesion)
+
+    '''
     def get_all_denied_sites(self):
         sesion = self.get_sesion()
         denied_sites = None
@@ -270,7 +311,7 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
             return denied_sites              
-
+    '''
 
     def selectBool_sitioWeb_denegado(self, sitioWeb_id):
         sesion = self.get_sesion()

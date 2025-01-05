@@ -3,13 +3,14 @@ from flask import flash, session, redirect, url_for
 from app.utils.SingleConexionBD import SingleConexionBD
 
 class UserManager:
-    def __init__(self):
-        self.db = SingleConexionBD()
+    def __init__(self, db):
+        self.db = db
 
     def login_user(self, username, password):
         user = self.db.verify_user(username, password)
         if user:
             session['logged_in'] = True
+            session['user_id'] = user.id  
             flash('Inicio de sesión exitoso')
             return True
         else:
@@ -35,6 +36,7 @@ class UserManager:
     def logout_user(self):
         session.pop('logged_in', None)
         flash('Sesión cerrada correctamente')
+
 
     @staticmethod
     def validate_email(email):

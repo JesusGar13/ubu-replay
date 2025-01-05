@@ -5,66 +5,20 @@
 {% block content %}
     <h1>Paginas web denegadas</h1>
     <p>Las sesiones no guardarán tu actividad cuando estés en estas páginas web</p>
-    
-    <h1>Lista de URLS denegadas</h1>
-    <input type="text" id="urlInput" placeholder="Ingresa una URL" />
-    <button id="addUrlButton">Agregar</button>
-    <ul id="urlList"></ul>
 
-    <script>
-        const urlInput = document.getElementById('urlInput');
-        const addUrlButton = document.getElementById('addUrlButton');
-        const urlList = document.getElementById('urlList');
+    <form method="post" action="{{ url_for('denied_web') }}">
+        <input type="text" name="url" placeholder="Introduce la URL" required>
+        <button type="submit">Agregar</button>
+    </form>
 
-        addUrlButton.addEventListener('click', () => {
-            const url = urlInput.value.trim();
-
-            if (url) {
-                fetch('/denied_web', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ url })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `<a href="${url}" target="_blank">${url}</a>
-                                            <button class="remove-button">Eliminar</button>`;
-                        urlList.appendChild(listItem);
-                        urlInput.value = '';
-                    } else {
-                        alert(data.error || 'Error al agregar la URL.');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            } else {
-                alert('Por favor, ingresa una URL válida.');
-            }
-        });
-
-        // Eliminar URL
-        urlList.addEventListener('click', (event) => {
-            if (event.target.classList.contains('remove-button')) {
-                const listItem = event.target.closest('li');
-                const siteId = listItem.dataset.id;
-
-                fetch(`/denied_web/${siteId}`, {
-                    method: 'DELETE',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        listItem.remove();
-                    } else {
-                        alert(data.error || 'Error al eliminar la URL.');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        });
-    </script>
-    
+    <ul>
+        {% for site in denied_sites %}
+            <li>
+                {{ site.sitio_web.main_url }}
+                <form method="post" action="{{ url_for('remove_denied_site', site_id=site.id) }}" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}
