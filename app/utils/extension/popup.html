@@ -1,14 +1,20 @@
-<!-- popup.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ubu-replay</title>
+    <title>Seguimiento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h3>Extensión de Tracking</h3>
-    <button id="startTracking">Iniciar Tracking</button>
+    <h2>Sesiones Cerradas</h2>
+    <ul id="sessions-list">
+        <!-- Aquí se mostrarán las sesiones -->
+    </ul>
+    <button id="refresh">Actualizar</button>
 
     <script src="popup.js"></script>
 </body>

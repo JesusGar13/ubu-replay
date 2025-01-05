@@ -138,8 +138,16 @@ def create_app():
     @app.route('/api', methods=['POST']) # Esto no funciona todavia 
     def api():
         data = request.get_json()
-        print(f'Data received: {data}')
-        return jsonify({'status': 'success', 'message': 'Data received successfully'})
+        
+        tabId = data.get('tabId')
+        recorrido = data.get('recorrido')
+        timeStart = data.get('timeStart')
+        timeEnd = data.get('timeEnd')
+
+        db = SingleConexionBD()
+        db.insert_newSession(1, time_start=timeStart, time_end=timeEnd, main_url=recorrido[0], urls_web=recorrido[1:])
+
+        return jsonify({'status': 'success', 'message': 'Data received successfully'}),200
 
 
     return app
