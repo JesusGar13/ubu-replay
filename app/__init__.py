@@ -11,7 +11,7 @@ def create_app():
 
     db = SingleConexionBD()
     db.create_tablas()
-    db.delete_all_users()
+    #db.delete_all_users()
     user_manager = UserManager(db)
 
     @app.route('/')

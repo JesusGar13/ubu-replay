@@ -1,6 +1,6 @@
 // Función para enviar datos a Flask
 function sendDataToFlask(data) {
-    fetch('http://127.0.0.1:5000/api', {  // URL de tu servidor Flask
+    fetch('http://127.0.0.1:5000/api/track', {  // URL de tu servidor Flask
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
