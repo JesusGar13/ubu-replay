@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from app.utils.userManager import UserManager
 from app.utils.SingleConexionBD import SingleConexionBD
+from app.utils.models import Session
+from flask import flash
+
 
 def create_app():
     app = Flask(__name__)
@@ -71,7 +74,8 @@ def create_app():
         global redo_history
         
         # Obtener las sesiones del usuario
-        sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
+        #sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
+        sesiones = db.get_sesion().query(Session).filter_by(user_id=user_id).order_by(Session.time_start).all()
 
         # Formatear los datos para enviarlos al template
         session_list = []
@@ -130,8 +134,20 @@ def create_app():
     @app.route('/session/<int:session_id>')
     def view_session(session_id):
         db = SingleConexionBD()
+        # Obtener la sesión específica por su ID
+        session_data = db.get_sesion().query(Session).filter_by(id=session_id).first()
+
+        if not session_data:
+            flash('Sesión no encontrada')
+            return redirect(url_for('track_session'))
         interactions = db.get_interactions_by_session(session_id)
-        
+
+        # Preparacion de los datos para pasarlos al template
+        session_info = {
+            "sitio_web": session_data.sitio_web.main_url if session_data.sitio_web else "Desconocido",
+            "time_start": session_data.time_start.strftime("%Y-%m-%d %H:%M:%S"),
+            "time_end": session_data.time_end.strftime("%Y-%m-%d %H:%M:%S"),
+        }
         return render_template('view_session.html', interactions=interactions)
     
     @app.route('/denied_web/<int:site_id>', methods=['DELETE'])

@@ -1,6 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Reproducir Sesión{% endblock %}
+
+{% block content %}
 <h1>Reproducción de Sesión</h1>
-<div id="session-player">
-    {% for interaction in interactions %}
-    <p>{{ interaction.timestamp }} - {{ interaction.event_type }} - {{ interaction.details }}</p>
-    {% endfor %}
+
+<!-- Información de la sesión -->
+<div>
+    <p><strong>Sitio Web:</strong> {{ session.sitio_web }}</p>
+    <p><strong>Fecha y Hora de Inicio:</strong> {{ session.time_start }}</p>
+    <p><strong>Fecha y Hora de Fin:</strong> {{ session.time_end }}</p>
 </div>
+
+<!-- Reproductor de la sesión -->
+<div id="session-player">
+    <h2>Interacciones</h2>
+    {% if interactions %}
+        {% for interaction in interactions %}
+        <p>
+            <strong>Tiempo:</strong> {{ interaction.timestamp }} <br>
+            <strong>Tipo:</strong> {{ interaction.event_type }} <br>
+            <strong>Detalles:</strong> {{ interaction.details }}
+        </p>
+        <hr>
+        {% endfor %}
+    {% else %}
+        <p>No hay interacciones registradas para esta sesión.</p>
+    {% endif %}
+</div>
+
+<!-- Botón para regresar al tracking de sesiones -->
+<div style="margin-top: 20px;">
+    <button onclick="window.location.href='{{ url_for('track_session') }}'" style="padding: 10px 20px; font-size: 16px;">
+        Volver al Tracking de Sesiones
+    </button>
+</div>
+{% endblock %}

@@ -301,7 +301,7 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
 
-    '''
+    
     def get_all_denied_sites(self):
         sesion = self.get_sesion()
         denied_sites = None
@@ -312,7 +312,7 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
             return denied_sites              
-    '''
+    
 
     def selectBool_sitioWeb_denegado(self, sitioWeb_id):
         sesion = self.get_sesion()
