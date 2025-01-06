@@ -1,4 +1,4 @@
-from flask import flash, Flask, render_template, request, redirect, url_for, jsonify, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from app.utils.userManager import UserManager
 from app.utils.SingleConexionBD import SingleConexionBD
 
@@ -6,12 +6,9 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = 'your_secret_key'
 
-
     db = SingleConexionBD()
-    db.delete_all()
     db.create_tablas()
     db.delete_all_users()
-
     user_manager = UserManager(db)
 
     @app.route('/')
@@ -37,12 +34,10 @@ def create_app():
                 return redirect(url_for('login'))
         return render_template('register.html')
 
-    @app.route('/logout', methods=['GET', 'POST'])
+    @app.route('/logout')
     def logout():
-        if request.method == 'POST':
-            user_manager.logout_user()
-            return redirect(url_for('home'))
-        return render_template('logout.html')
+        user_manager.logout_user()
+        return redirect(url_for('home'))
 
     @app.route('/user_main')
     def user_main():
@@ -50,7 +45,7 @@ def create_app():
 
     @app.route('/tracking')
     def tracking():
-        #db = SingleConexionBD()
+        db = SingleConexionBD()
         user_id = 1  # Cambiar según el usuario autenticado
 
         # Obtener el conteo de sesiones por sitio web
@@ -68,10 +63,10 @@ def create_app():
 
         return render_template('tracking.html', tracked_sites=tracked_sites)
 
-    @app.route('/tracking/track_session')
+    @app.route('/track_session')
     def track_session():
         # Crear una instancia de la conexión a la base de datos
-        #db = SingleConexionBD()
+        db = SingleConexionBD()
         user_id = 1  # Puedes usar el ID del usuario autenticado en lugar de este valor fijo.
         global redo_history
         
@@ -95,7 +90,7 @@ def create_app():
     @app.route('/api/track', methods=['POST'])
     def track_interactions():
         data = request.json
-        #db = SingleConexionBD()
+        db = SingleConexionBD()
         
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:
@@ -115,32 +110,21 @@ def create_app():
 
     @app.route('/denied_web', methods=['GET', 'POST'])
     def denied_web():
-        #db = SingleConexionBD()
-
-        if 'user_id' not in session:
-            flash('Por favor, inicia sesión primero.')
-            return redirect(url_for('login'))
-
-        user_id = session['user_id']
+        db = SingleConexionBD()
 
         if request.method == 'POST':
-            url = request.form['url']
-            sitio_web = db.select_SitioWeb(main_url=url)
-            if not sitio_web:
-                db.insert_newSitioWeb(main_url=url)
-                sitio_web = db.select_SitioWeb(main_url=url)
-            db.insert_sitioWeb_denegado(sitioWeb_id=sitio_web.id, user_id=user_id)
-            flash('Sitio web denegado agregado correctamente')
-            return redirect(url_for('denied_web'))
+            site_url = request.json.get('url')
+            if site_url:
+                # Inserta la URL en la base de datos
+                db.insert_sitioWeb_denegado(site_url)
+                return jsonify({'message': 'URL denegada agregada correctamente'}), 201
+            return jsonify({'error': 'URL no válida'}), 400
 
-        denied_sites = db.get_denied_sites_by_user(user_id)
-        return render_template('denied_web.html', denied_sites=denied_sites)
+        # Obtener la lista de URLs denegadas desde la base de datos
+        denied_sites = db.get_all_denied_sites()
+        denied_sites_list = [{'id': site.id, 'main_url': site.main_url} for site in denied_sites]
 
-    @app.route('/remove_denied_site/<int:site_id>', methods=['POST'])
-    def remove_denied_site(site_id):
-        db.remove_sitioWeb_denegado(site_id)
-        flash('Sitio web denegado eliminado correctamente')
-        return redirect(url_for('denied_web'))
+        return render_template('denied_web.html', denied_sites=denied_sites_list)
 
     
     @app.route('/session/<int:session_id>')
@@ -149,13 +133,16 @@ def create_app():
         interactions = db.get_interactions_by_session(session_id)
         
         return render_template('view_session.html', interactions=interactions)
+    
+    @app.route('/denied_web/<int:site_id>', methods=['DELETE'])
+    def remove_denied_web(site_id):
+        db = SingleConexionBD()
+        try:
+            db.remove_sitioWeb_denegado(site_id)
+            return jsonify({'message': 'URL denegada eliminada correctamente'}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
 
-
-    @app.route('/api', methods=['POST']) # Esto no funciona todavia 
-    def api():
-        data = request.get_json()
-        print(f'Data received: {data}')
-        return jsonify({'status': 'success', 'message': 'Data received successfully'})
 
 
     return app

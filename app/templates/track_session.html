@@ -28,5 +28,11 @@
         {% endfor %}
     </tbody>
 </table>
+<!-- Botón para regresar al menú principal -->
+<div style="margin-top: 20px;">
+    <button onclick="window.location.href='{{ url_for('user_main') }}'" style="padding: 10px 20px; font-size: 16px;">
+        Volver al Menú Principal
+    </button>
+</div>
 
 {% endblock %}
