@@ -208,6 +208,16 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
 
+    def get_interactions_by_session(self, session_id):
+        sesion = self.get_sesion()
+        try:
+            interactions = sesion.query(Webs).filter_by(session_id=session_id).all()
+            return interactions
+        except Exception as e:
+            print(f"Error al obtener las interacciones de una sesión: {e}")
+            return []
+        finally:
+            self.close_sesion(sesion)
             
     def selectAll_countSession_from_SitioWeb(self, user_id):
         sesion = self.get_sesion()
