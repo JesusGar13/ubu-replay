@@ -87,6 +87,8 @@ def create_app():
                 "time_start": sesion.time_start.strftime("%Y-%m-%d %H:%M:%S"),
                 "time_end": sesion.time_end.strftime("%Y-%m-%d %H:%M:%S"),
             })
+            
+        print(session_list)
 
         # Renderizar el template con las sesiones
         return render_template('track_session.html', sessions=session_list)
