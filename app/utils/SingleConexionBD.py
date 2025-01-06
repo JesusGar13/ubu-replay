@@ -183,9 +183,9 @@ class SingleConexionBD:
 
             # Creamos la nueva sesión
             new_session = Session(
-                user_id=user_id,
-                time_start=datetime.strptime(time_start, "%Y-%m-%d %H:%M:%S"),  # Formato correcto
-                time_end=datetime.strptime(time_end, "%Y-%m-%d %H:%M:%S")
+                user_id=user_id,            
+                time_start=datetime.strptime(time_start, '%Y-%m-%dT%H:%M:%S.%fZ'),  # Convertimos a objeto datetime
+                time_end=datetime.strptime(time_end, '%Y-%m-%dT%H:%M:%S.%fZ')       # Convertimos a objeto datetime
             )
             sesion.add(new_session)
             sesion.commit()  # Guardamos la sesión para obtener su ID

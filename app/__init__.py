@@ -44,7 +44,21 @@ def create_app():
 
     @app.route('/user_main')
     def user_main():
-        return render_template('user_main.html')
+        db = SingleConexionBD()
+
+        # Obtener el conteo de sesiones por sitio web
+        user_id = 1
+        siteCounts = db.selectAll_countSession_from_SitioWeb(user_id)
+        webs = []
+        counts = []
+
+        for web, count in siteCounts.items():
+            webs.append(web)
+            counts.append(count)
+
+        webs_counts = zip(webs, counts)
+            
+        return render_template('user_main.html', webs_counts=webs_counts)   
 
     @app.route('/tracking')
     def tracking():
@@ -74,8 +88,8 @@ def create_app():
         global redo_history
         
         # Obtener las sesiones del usuario
-        #sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
-        sesiones = db.get_sesion().query(Session).filter_by(user_id=user_id).order_by(Session.time_start).all()
+        sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
+        #sesiones = db.get_sesion().query(Session).filter_by(user_id=user_id).order_by(Session.time_start).all()
 
         # Formatear los datos para enviarlos al template
         session_list = []
@@ -87,6 +101,14 @@ def create_app():
                 "time_start": sesion.time_start.strftime("%Y-%m-%d %H:%M:%S"),
                 "time_end": sesion.time_end.strftime("%Y-%m-%d %H:%M:%S"),
             })
+
+        session_list.append({
+            "id": 1,
+            "sitio_web": "https://www.google.com",
+            "sitio_web_id": 1,
+            "time_start": "2021-09-01 12:00:00",
+            "time_end": "2021-09-01 12:30:00",
+        })
             
         print(session_list)
 
@@ -100,14 +122,17 @@ def create_app():
         
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:
-            user_id = data['user_id']
-            sitio_web = data['site_url']
-            interactions = data['interactions']  # Lista de interacciones
-            
+            user_id = 1
+            time_start = data.get("timeStart")  # Hora de inicio de la sesión
+            time_end = data.get("timeEnd")  # Hora de fin de la sesión
+            main_url = data.get('recorrido')[0]
+            urls_web = data.get('recorrido')[1:] 
             # Inserta las interacciones en la base de datos
-            for interaction in interactions:
-                # Guardar interacción (ejemplo)
-                db.insert_interaction(user_id, sitio_web, interaction)
+            db.insert_newSession(user_id=1,
+                                time_start=time_start,
+                                time_end=time_end,
+                                main_url=main_url,
+                                urls_web=urls_web)
             
             return jsonify({'message': 'Interacciones registradas correctamente'}), 201
         except Exception as e:

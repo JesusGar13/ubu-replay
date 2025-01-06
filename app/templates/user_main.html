@@ -10,6 +10,19 @@
         </ul>
     </nav>
 
+    <table>
+        <tr>
+            <th>SitioWeb</th>
+            <th>Nº sesiones</th>
+        </tr>
+        {% for site, count in webs_counts %}
+            <tr>
+                <td>{{ site }}</td>
+                <td>{{ count }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
     <h1>Bienvenido a tu perfil</h1>
     <button onclick="location.href='/denied_web'">Sitios web denegados</button>
     <button onclick="location.href='/track_session'">Track Sessions</button>

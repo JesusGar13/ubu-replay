@@ -18,11 +18,17 @@
     <tbody>
         {% for session in sessions %}
         <tr>
-            <td><a href="/site/{{ session.sitio_web_id }}">{{ session.sitio_web }}</a></td>
+            <td>
+                {% if session.sitio_web_id %}
+                <a href="/site/{{ session.sitio_web_id }}">{{ session.sitio_web }}</a>
+                {% else %}
+                Desconocido
+                {% endif %}
+            </td>
             <td>{{ session.time_start }}</td>
             <td>{{ session.time_end }}</td>
             <td>
-                <a href="/session/{{ session.id }}">Reproducir Sesión</a>
+                <a href="{{ url_for('view_session', session_id=session.id) }}">Reproducir Sesión</a>
             </td>
         </tr>
         {% endfor %}
