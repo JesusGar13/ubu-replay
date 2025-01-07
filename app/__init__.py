@@ -79,36 +79,6 @@ def create_app():
             
         return render_template('user_main.html', webs_counts=webs_counts, user_id=user_id)   
 
-    @app.route('/tracking')
-    def tracking():
-        db = SingleConexionBD()
-        user_id = session.get('user_id')  
-        # Verificar si el tracking está habilitado (por ejemplo, a través de una configuración en la base de datos o sesión)
-        tracking_enabled = session.get('tracking_enabled', True)  
-
-        # Obtener el conteo de sesiones por sitio web
-        tracked_sites = []
-        site_sessions = db.selectAll_countSession_from_SitioWeb(user_id)
-
-        # Formatear los datos para el template
-        for site_url, num_sessions in site_sessions.items():
-            sitio_web = db.select_SitioWeb(site_url)  # Obtener el objeto SitioWeb
-            tracked_sites.append({
-                "id": sitio_web.id,
-                "main_url": site_url,
-                "num_sessions": num_sessions
-            })
-
-        # Obtener el estado del tracking desde la sesión
-        tracking_enabled = session.get('tracking_enabled', True)
-        return render_template(
-            'tracking.html', 
-            tracked_sites=tracked_sites, 
-            tracking_enabled=tracking_enabled
-        )
-    
-        #return render_template('tracking.html', tracked_sites=tracked_sites, tracking_enabled=tracking_enabled)
-
 
 
     @app.route('/track_session')
