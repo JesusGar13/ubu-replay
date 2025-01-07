@@ -129,7 +129,7 @@ def create_app():
     def track_interactions():
         data = request.json
         db = SingleConexionBD()
-        print("Datos recibidos:", data)  # Debug
+        
         
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:
