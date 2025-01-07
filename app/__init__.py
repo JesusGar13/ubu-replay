@@ -139,7 +139,7 @@ def create_app():
             main_url = data.get('recorrido')[0]
             urls_web = data.get('recorrido')[1:] 
             # Inserta las interacciones en la base de datos
-            db.insert_newSession(user_id=1,
+            db.insert_newSession(user_id=user_id,
                                 time_start=time_start,
                                 time_end=time_end,
                                 main_url=main_url,
