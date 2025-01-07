@@ -18,6 +18,55 @@ def create_app():
     def home():
         return render_template('app_main.html')
 
+
+    # Método plantilla para Login y Registro
+    class Autenticacion:
+        def manejar_solicitud(self):
+            if request.method == 'POST':
+                return self.ejecutar_autenticacion()
+            return self.renderizar_plantilla()
+
+        def ejecutar_autenticacion(self):
+            pass
+
+        def renderizar_plantilla(self):
+            pass
+
+    class Login(Autenticacion):
+        def ejecutar_autenticacion(self):
+            username = request.form['username']
+            password = request.form['password']
+            if user_manager.login_user(username, password):
+                return redirect(url_for('user_main'))
+            return self.renderizar_plantilla()
+
+        def renderizar_plantilla(self):
+            return render_template('login.html')
+
+    class Registro(Autenticacion):
+        def ejecutar_autenticacion(self):
+            username = request.form['username']
+            email = request.form['email']
+            password = request.form['password']
+            if user_manager.register_user(username, email, password):
+                return redirect(url_for('login'))
+            return self.renderizar_plantilla()
+
+        def renderizar_plantilla(self):
+            return render_template('register.html')
+
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        manejador = Login()
+        return manejador.manejar_solicitud()
+
+    @app.route('/register', methods=['GET', 'POST'])
+    def register():
+        manejador = Registro()
+        return manejador.manejar_solicitud()   
+
+
+    '''
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == 'POST':
@@ -36,6 +85,8 @@ def create_app():
             if user_manager.register_user(username, email, password):
                 return redirect(url_for('login'))
         return render_template('register.html')
+
+    '''
 
     @app.route('/logout', methods=['GET', 'POST'])
     def logout():
