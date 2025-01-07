@@ -63,6 +63,14 @@ function closeSession(tabId) {
 
     // Aquí puedes enviar los datos al servidor Flask
     sendDataToFlask(tabId, sesiones[tabId]);
+    clearSession(tabId);
+  }
+}
+
+function clearSession(tabId) {
+  if (sesiones[tabId] !== undefined) {
+    console.log(`Sesión de la pestaña con ID ${tabId} limpiada`);
+    delete sesiones[tabId];
   }
 }
 
