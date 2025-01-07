@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from app.utils.userManager import UserManager
 from app.utils.SingleConexionBD import SingleConexionBD
 from app.utils.models import Session
@@ -37,10 +37,12 @@ def create_app():
                 return redirect(url_for('login'))
         return render_template('register.html')
 
-    @app.route('/logout')
+    @app.route('/logout', methods=['GET', 'POST'])
     def logout():
-        user_manager.logout_user()
-        return redirect(url_for('home'))
+        if request.method == 'POST':
+            user_manager.logout_user()
+            return redirect(url_for('home'))
+        return render_template('logout.html')
 
     @app.route('/user_main')
     def user_main():
@@ -142,20 +144,33 @@ def create_app():
     @app.route('/denied_web', methods=['GET', 'POST'])
     def denied_web():
         db = SingleConexionBD()
+        user_id = session.get('user_id')
 
         if request.method == 'POST':
-            site_url = request.json.get('url')
-            if site_url:
-                # Inserta la URL en la base de datos
-                db.insert_sitioWeb_denegado(site_url)
-                return jsonify({'message': 'URL denegada agregada correctamente'}), 201
-            return jsonify({'error': 'URL no válida'}), 400
+            data = request.json
+            url = data.get('url')
+            sitio_web = db.select_SitioWeb(main_url=url)
+            if not sitio_web:
+                db.insert_newSitioWeb(main_url=url)
+                sitio_web = db.select_SitioWeb(main_url=url)
+            existing_denied_site = db.selectBool_sitioWeb_denegado(sitioWeb_id=sitio_web.id)
+            if not existing_denied_site:
+                db.insert_sitioWeb_denegado(sitioWeb_id=sitio_web.id, user_id=user_id)
+                return jsonify({'message': 'Pagina web denegada correctamente', 'site_id': sitio_web.id}), 201
+            else:
+                return jsonify({'error': 'La págia web ya ha sido denegada'}), 400
 
-        # Obtener la lista de URLs denegadas desde la base de datos
-        denied_sites = db.get_all_denied_sites()
-        denied_sites_list = [{'id': site.id, 'main_url': site.main_url} for site in denied_sites]
+        denied_sites = db.get_denied_sites_by_user(user_id=user_id)
+        return render_template('denied_web.html', denied_sites=denied_sites)
 
-        return render_template('denied_web.html', denied_sites=denied_sites_list)
+
+    @app.route('/denied_web/<int:site_id>', methods=['DELETE'])
+    def remove_denied_web(site_id):
+        db = SingleConexionBD()
+        db.remove_sitioWeb_denegado(site_id=site_id)
+        return jsonify({'message': 'Pagina web eliminada correctamente'}), 200    
+        
+
 
     
     @app.route('/session/<int:session_id>')
@@ -176,15 +191,6 @@ def create_app():
             "time_end": session_data.time_end.strftime("%Y-%m-%d %H:%M:%S"),
         }
         return render_template('view_session.html', interactions=interactions)
-    
-    @app.route('/denied_web/<int:site_id>', methods=['DELETE'])
-    def remove_denied_web(site_id):
-        db = SingleConexionBD()
-        try:
-            db.remove_sitioWeb_denegado(site_id)
-            return jsonify({'message': 'URL denegada eliminada correctamente'}), 200
-        except Exception as e:
-            return jsonify({'error': str(e)}), 400
 
 
 

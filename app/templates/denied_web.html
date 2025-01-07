@@ -2,30 +2,84 @@
 
 {% block title %}Access Denied{% endblock %}
 
-{% block content %}
+{% block content %}    
     <h1>Paginas web denegadas</h1>
     <p>Las sesiones no guardarán tu actividad cuando estés en estas páginas web</p>
 
-    <form method="post" action="{{ url_for('denied_web') }}">
-        <input type="text" name="url" placeholder="Introduce la URL" required>
-        <button type="submit">Agregar</button>
-    </form>
-
-    <ul>
+    <h1>Lista de URLS denegadas</h1>
+    <input type="text" id="urlInput" placeholder="Ingresa una URL" />
+    <button id="addUrlButton">Agregar</button>
+    <ul id="urlList">
         {% for site in denied_sites %}
-            <li>
-                {{ site.sitio_web.main_url }}
-                <form method="post" action="{{ url_for('remove_denied_site', site_id=site.id) }}" style="display:inline;">
-                    <button type="submit">Eliminar</button>
-                </form>
+            <li data-id="{{ site.id }}">
+                <a href="{{ site.sitio_web.main_url }}" target="_blank">{{ site.sitio_web.main_url }}</a>
+                <button class="remove-button">Eliminar</button>
             </li>
         {% endfor %}
     </ul>
-    <!-- Botón para regresar al menú principal -->
-    <div style="margin-top: 20px;">
-    <button onclick="window.location.href='{{ url_for('user_main') }}'" style="padding: 10px 20px; font-size: 16px;">
-        Volver al Menú Principal
-    </button>
-</div>
 
+    <button id="menuPrincipal">Volver al menú principal</button>
+
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const addUrlButton = document.getElementById('addUrlButton');
+        const urlList = document.getElementById('urlList');
+        const goToUserMainButton = document.getElementById('goToUserMainButton');
+
+        addUrlButton.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+
+            if (url) {
+                fetch('/denied_web', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        const listItem = document.createElement('li');
+                        listItem.dataset.id = data.site_id;
+                        listItem.innerHTML = `<a href="${url}" target="_blank">${url}</a>
+                                            <button class="remove-button">Eliminar</button>`;
+                        urlList.appendChild(listItem);
+                        urlInput.value = '';
+                    } else {
+                        alert(data.error || 'Error al agregar la URL.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('Por favor, ingresa una URL válida.');
+            }
+        });
+
+        // Eliminar URL
+        urlList.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-button')) {
+                const listItem = event.target.closest('li');
+                const siteId = listItem.dataset.id;
+
+                fetch(`/denied_web/${siteId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        listItem.remove();
+                    } else {
+                        alert(data.error || 'Error al eliminar la URL.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+
+        // Redirigir a user_main
+        menuPrincipal.addEventListener('click', () => {
+            window.location.href = '/user_main';
+        });
+    </script>
 {% endblock %}
