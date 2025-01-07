@@ -80,7 +80,9 @@ def create_app():
     def tracking():
         db = SingleConexionBD()
         user_id = session.get('user_id')  
-
+        # Verificar si el tracking está habilitado (por ejemplo, a través de una configuración en la base de datos o sesión)
+        tracking_enabled = session.get('tracking_enabled', True)  
+        
         # Obtener el conteo de sesiones por sitio web
         tracked_sites = []
         site_sessions = db.selectAll_countSession_from_SitioWeb(user_id)
@@ -94,7 +96,17 @@ def create_app():
                 "num_sessions": num_sessions
             })
 
-        return render_template('tracking.html', tracked_sites=tracked_sites)
+        # Obtener el estado del tracking desde la sesión
+        tracking_enabled = session.get('tracking_enabled', True)
+        return render_template(
+            'tracking.html', 
+            tracked_sites=tracked_sites, 
+            tracking_enabled=tracking_enabled
+        )
+    
+        #return render_template('tracking.html', tracked_sites=tracked_sites, tracking_enabled=tracking_enabled)
+
+
 
     @app.route('/track_session')
     def track_session():
@@ -179,8 +191,6 @@ def create_app():
         db.remove_sitioWeb_denegado(site_id=site_id)
         return jsonify({'message': 'Pagina web eliminada correctamente'}), 200    
         
-
-
     
     @app.route('/session/<int:session_id>')
     def view_session(session_id):
@@ -201,6 +211,20 @@ def create_app():
         }
         return render_template('view_session.html', interactions=interactions)
 
+    @app.route('/toggle_tracking', methods=['POST'])
+    def toggle_tracking():
+        try:
+            # Recibe el estado desde el frontend
+            data = request.json
+            enable = data.get('enable')
+
+            # Guarda el estado en la sesión (puedes usar una base de datos si prefieres persistencia)
+            session['tracking_enabled'] = enable
+
+            message = "Tracking activado" if enable else "Tracking desactivado"
+            return jsonify({'message': message}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
 
 
     return app

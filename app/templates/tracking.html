@@ -6,6 +6,11 @@
     <h1>Tracking</h1>
     <p>A continuación, se muestra el listado de los sitios web rastreados y la cantidad de sesiones asociadas:</p>
 
+    <!-- Botón para Activar/Desactivar Tracking -->
+    <button id="toggleTrackingButton" data-tracking="{{ 'true' if tracking_enabled else 'false' }}">
+        {{ 'Desactivar Tracking' if tracking_enabled else 'Activar Tracking' }}
+    </button>
+
     <table border="1" cellpadding="5">
         <thead>
             <tr>
@@ -26,4 +31,31 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        const toggleTrackingButton = document.getElementById('toggleTrackingButton');
+
+        toggleTrackingButton.addEventListener('click', () => {
+            const isTrackingEnabled = toggleTrackingButton.dataset.tracking === 'true';
+
+            fetch('/toggle_tracking', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ enable: !isTrackingEnabled }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Cambia el estado del botón
+                    toggleTrackingButton.dataset.tracking = (!isTrackingEnabled).toString();
+                    toggleTrackingButton.textContent = isTrackingEnabled ? 'Activar Tracking' : 'Desactivar Tracking';
+                } else {
+                    alert(data.error || 'Error al cambiar el estado del tracking.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
 {% endblock %}
