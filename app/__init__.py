@@ -104,7 +104,7 @@ def create_app():
                 "time_start": sesion[0].time_start.strftime("%Y-%m-%d %H:%M:%S"),
                 "time_end": sesion[0].time_end.strftime("%Y-%m-%d %H:%M:%S"),
             })
-        print(session_list)
+    
         # Enviar las sesiones formateadas al template
         return render_template('track_session.html', sessions=session_list)
 
@@ -115,7 +115,10 @@ def create_app():
         if not session.get('tracking_enabled', True):
             return jsonify({'message': 'Tracking está desactivado. No se registrarán interacciones.'}), 200
 
-        
+        webDenegadas = db.get_denied_sites_by_user(user_id=session.get('user_id'))
+
+        lista_denegadas = [site.sitio_web.main_url for site in webDenegadas]
+        print(lista_denegadas)
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:
             user_id = session.get('user_id')
@@ -123,6 +126,9 @@ def create_app():
             time_end = data.get("timeEnd")  # Hora de fin de la sesión
             main_url = data.get('recorrido')[0]
             urls_web = data.get('recorrido')[1:] 
+
+            if main_url in lista_denegadas:
+                return jsonify({'error': 'La página web principal está denegada'}), 400
             # Inserta las interacciones en la base de datos
             db.insert_newSession(user_id=user_id,
                                 time_start=time_start,
