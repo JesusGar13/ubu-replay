@@ -102,14 +102,17 @@ def create_app():
     def track_session():
         # Crear una instancia de la conexión a la base de datos
         db = SingleConexionBD()
-        user_id = 1  # Puedes usar el ID del usuario autenticado en lugar de este valor fijo.
-        global redo_history
-        
-        # Obtener las sesiones del usuario
-        sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
-        #sesiones = db.get_sesion().query(Session).filter_by(user_id=user_id).order_by(Session.time_start).all()
+        user_id = 1  # Usa el ID del usuario autenticado si está disponible.
 
-        # Formatear los datos para enviarlos al template
+        # Obtener las sesiones del usuario desde la base de datos
+        sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
+
+        # Validar si hay sesiones disponibles
+        if not sesiones:
+            flash("No hay sesiones disponibles para este usuario.", "info")
+            return render_template('track_session.html', sessions=[])
+
+        # Formatear las sesiones para enviarlas al template
         session_list = []
         for sesion in sesiones:
             session_list.append({
@@ -120,23 +123,14 @@ def create_app():
                 "time_end": sesion.time_end.strftime("%Y-%m-%d %H:%M:%S"),
             })
 
-        session_list.append({
-            "id": 1,
-            "sitio_web": "https://www.google.com",
-            "sitio_web_id": 1,
-            "time_start": "2021-09-01 12:00:00",
-            "time_end": "2021-09-01 12:30:00",
-        })
-            
-        print(session_list)
-
-        # Renderizar el template con las sesiones
+        # Enviar las sesiones formateadas al template
         return render_template('track_session.html', sessions=session_list)
-    
+
     @app.route('/api/track', methods=['POST'])
     def track_interactions():
         data = request.json
         db = SingleConexionBD()
+        print("Datos recibidos:", data)  # Debug
         
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:

@@ -1,29 +1,29 @@
-{% extends 'base.html' %}
+<h1>Bienvenido a tu perfil</h1>
 
-{% block title %}User Main Page{% endblock %}
-
-{% block content %}
-
-    <nav style="text-align: right;">
-        <ul style="list-style-type: none; margin: 10; padding: 0;">
-            <li style="display: inline; margin-right: 10px;"><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
-        </ul>
-    </nav>
-
-    <table>
+<h2>Sesiones por Sitio Web</h2>
+<table border="1" cellpadding="5" style="width: 100%; border-collapse: collapse;">
+    <thead>
         <tr>
-            <th>SitioWeb</th>
-            <th>Nº sesiones</th>
+            <th style="text-align: left;">Sitio Web</th>
+            <th style="text-align: center;">Nº Sesiones</th>
         </tr>
+    </thead>
+    <tbody>
         {% for site, count in webs_counts %}
             <tr>
-                <td>{{ site }}</td>
-                <td>{{ count }}</td>
+                <!-- Trunca la URL después del dominio para mejor visualización -->
+                <td>
+                    <a href="{{ site }}" target="_blank">
+                        {{ site.split('?')[0] if '?' in site else site.split('#')[0] if '#' in site else site }}
+                    </a>
+                </td>
+                <td style="text-align: center;">{{ count }}</td>
             </tr>
         {% endfor %}
-    </table>
+    </tbody>
+</table>
 
-    <h1>Bienvenido a tu perfil</h1>
-    <button onclick="location.href='/denied_web'">Sitios web denegados</button>
-    <button onclick="location.href='/track_session'">Track Sessions</button>
-{% endblock %}
+<div style="margin-top: 20px;">
+    <button onclick="location.href='/denied_web'" style="padding: 10px 20px; font-size: 16px;">Sitios web denegados</button>
+    <button onclick="location.href='/track_session'" style="padding: 10px 20px; font-size: 16px;">Track Sessions</button>
+</div>
