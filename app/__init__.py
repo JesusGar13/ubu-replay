@@ -40,8 +40,6 @@ def create_app():
         if 'logged_in' not in session:
             return redirect(url_for('login')) 
 
-        db = SingleConexionBD()
-
         user_id = session.get('user_id')
         siteCounts = db.selectAll_countSession_from_SitioWeb(user_id)
         webs = []
@@ -59,7 +57,6 @@ def create_app():
 
     @app.route('/track_session')
     def track_session():
-        db = SingleConexionBD()
         user_id = session.get('user_id')
 
         sesiones = db.selectAll_session_from_user(user_id)
@@ -83,7 +80,6 @@ def create_app():
     @app.route('/api/track', methods=['POST'])
     def track_interactions():
         data = request.json
-        db = SingleConexionBD()
         if not session.get('tracking_enabled', True):
             return jsonify({'message': 'Tracking está desactivado. No se registrarán interacciones.'}), 200
 
@@ -113,7 +109,6 @@ def create_app():
 
     @app.route('/denied_web', methods=['GET', 'POST'])
     def denied_web():
-        db = SingleConexionBD()
         user_id = session.get('user_id')
 
         if request.method == 'POST':
@@ -136,14 +131,12 @@ def create_app():
 
     @app.route('/denied_web/<int:site_id>', methods=['DELETE'])
     def remove_denied_web(site_id):
-        db = SingleConexionBD()
         db.remove_sitioWeb_denegado(site_id=site_id)
         return jsonify({'message': 'Pagina web eliminada correctamente'}), 200    
         
     
     @app.route('/session/<int:session_id>')
     def view_session(session_id):
-        db = SingleConexionBD()
 
         session_data = db.get_sesion().query(Session).filter_by(id=session_id).first()
 
