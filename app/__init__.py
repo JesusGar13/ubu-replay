@@ -12,7 +12,6 @@ def create_app():
     db = SingleConexionBD()
     db.create_tablas()
     #db.delete_all_users()
-    
 
     @app.route('/')
     def home():
@@ -65,7 +64,7 @@ def create_app():
         db = SingleConexionBD()
 
         # Obtener el conteo de sesiones por sitio web
-        user_id = 1
+        user_id = session.get('user_id')
         siteCounts = db.selectAll_countSession_from_SitioWeb(user_id)
         webs = []
         counts = []
@@ -73,15 +72,14 @@ def create_app():
         for web, count in siteCounts.items():
             webs.append(web)
             counts.append(count)
-
         webs_counts = zip(webs, counts)
             
-        return render_template('user_main.html', webs_counts=webs_counts)   
+        return render_template('user_main.html', webs_counts=webs_counts, user_id=user_id)   
 
     @app.route('/tracking')
     def tracking():
         db = SingleConexionBD()
-        user_id = 1  # Cambiar según el usuario autenticado
+        user_id = session.get('user_id')  
 
         # Obtener el conteo de sesiones por sitio web
         tracked_sites = []
@@ -102,7 +100,7 @@ def create_app():
     def track_session():
         # Crear una instancia de la conexión a la base de datos
         db = SingleConexionBD()
-        user_id = 1  # Puedes usar el ID del usuario autenticado en lugar de este valor fijo.
+        user_id = session.get('user_id')  
         global redo_history
         
         # Obtener las sesiones del usuario
@@ -140,7 +138,7 @@ def create_app():
         
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:
-            user_id = 1
+            user_id = session.get('user_id')
             time_start = data.get("timeStart")  # Hora de inicio de la sesión
             time_end = data.get("timeEnd")  # Hora de fin de la sesión
             main_url = data.get('recorrido')[0]
