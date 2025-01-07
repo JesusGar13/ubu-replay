@@ -19,14 +19,6 @@ Este proyecto implementa una versión minimalista de una solución de Session Re
 3. Estas interacciones se agrupan en sesiones y se envían a la aplicación web.
 4. La aplicación web almacena las sesiones y permite su visualización a través de una interfaz gráfica.
 
-## Tecnologías Utilizadas 🛠️
-
-- **Frontend**: Extensión de Chrome (JavaScript, HTML, CSS).
-- **Backend**: Aplicación web desarrollada con Flask.
-- **Base de datos**: SQLite para almacenar las sesiones capturadas.
-- **ORM**: SQLAlchemy para gestionar la base de datos.
-
-
 ## Instalación y Configuración 💾
 
 ### Extensión de Chrome
@@ -47,4 +39,14 @@ Este proyecto implementa una versión minimalista de una solución de Session Re
 - Ejecuta la app mediante el contenedor docker:
     ```bash
    make run 
+
+
+## Tecnologías Utilizadas 🛠️
+
+- **Frontend**: Extensión de Chrome (JavaScript, HTML, CSS).
+- **Backend**: Aplicación web desarrollada con Flask.
+- **Base de datos**: SQLite para almacenar las sesiones capturadas.
+- **ORM**: SQLAlchemy para gestionar la base de datos.
+
+
 
