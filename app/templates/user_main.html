@@ -1,3 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}Main Page{% endblock %}
+
+{% block content %}
+
 <h1>Bienvenido a tu perfil</h1>
 
 <h2>Sesiones por Sitio Web</h2>
@@ -27,3 +33,5 @@
     <button onclick="location.href='/denied_web'" style="padding: 10px 20px; font-size: 16px;">Sitios web denegados</button>
     <button onclick="location.href='/track_session'" style="padding: 10px 20px; font-size: 16px;">Track Sessions</button>
 </div>
+
+{% endblock %}
