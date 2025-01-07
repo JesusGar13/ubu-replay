@@ -116,9 +116,7 @@ def create_app():
             return jsonify({'message': 'Tracking está desactivado. No se registrarán interacciones.'}), 200
 
         webDenegadas = db.get_denied_sites_by_user(user_id=session.get('user_id'))
-
         lista_denegadas = [site.sitio_web.main_url for site in webDenegadas]
-        print(lista_denegadas)
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:
             user_id = session.get('user_id')
