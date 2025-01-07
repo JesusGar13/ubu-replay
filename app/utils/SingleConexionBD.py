@@ -247,21 +247,13 @@ class SingleConexionBD:
             return sitioWeb_countSession
 
 
-    def selectAll_session_from_sitioWeb(self, user_id, sitioWeb_id):
+    def selectAll_session_from_user(self, user_id):
         sesion = self.get_sesion()
         sessions = None
 
         try:
-            # Consulta las sesiones del usuario para el sitio web específico
-            sessions = (
-                sesion.query(Session)
-                .join(SitioWebSession, Session.id == SitioWebSession.session_id)
-                .filter(
-                    Session.user_id == user_id,
-                    SitioWebSession.sitio_web_id == sitioWeb_id
-                )
-                .all()
-            )
+           sessions = sesion.query(Session, SitioWeb).join(SitioWebSession, Session.id == SitioWebSession.session_id).join(SitioWeb, SitioWebSession.sitio_web_id == SitioWeb.id).filter(Session.user_id == user_id).all()
+           
         except Exception as e:
             print(f"Error al consultar las sesiones por sitio web: {e}")
         finally:

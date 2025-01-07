@@ -33,7 +33,7 @@
 <table>
     <thead>
         <tr>
-            <th style="text-align: center;">Id Web</th>
+            <th style="text-align: center;">Id Sesion</th>
             <th style="text-align: center;">Sitio Web</th>
             <th style="text-align: center;">Fecha Inicio</th>
             <th style="text-align: center;">Fecha Fin</th>
@@ -42,16 +42,10 @@
     <tbody>
         {% for session in sessions %}
         <tr>
-            <td>
-                {% if session.sitio_web_id %}
-                <a href="/site/{{ session.sitio_web_id }}" target="_blank">
-                    {{ session.sitio_web.split('?')[0] | truncate(50) }}
-                </a>
-                {% else %}
-                Desconocido
-                {% endif %}
-            </td>
-            <td style="text-align: center;">{{ session.num_sessions }}</td>
+            <td>{{ session.id}}</td>
+            <td>{{ session.sitio_web.split('?')[0] if '?' in session.sitio_web else session.sitio_web.split('#')[0] if '#' in session.sitio_web else session.sitio_web }}</td>
+            <td>{{ session.time_start }}</td>
+            <td>{{ session.time_end }}</td>
         </tr>
         {% endfor %}
     </tbody>

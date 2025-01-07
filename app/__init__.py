@@ -85,11 +85,10 @@ def create_app():
     def track_session():
         # Crear una instancia de la conexión a la base de datos
         db = SingleConexionBD()
-        user_id = 1  # Puedes usar el ID del usuario autenticado en lugar de este valor fijo.
-        global redo_history
+        user_id = session.get('user_id')
         
         # Obtener las sesiones del usuario
-        sesiones = db.selectAll_session_from_sitioWeb(user_id, sitioWeb_id=None)
+        sesiones = db.selectAll_session_from_user(user_id)
 
         # Validar si hay sesiones disponibles
         if not sesiones:
@@ -100,13 +99,12 @@ def create_app():
         session_list = []
         for sesion in sesiones:
             session_list.append({
-                "id": sesion.id,
-                "sitio_web": sesion.sitio_web.main_url if sesion.sitio_web else "Desconocido",
-                "sitio_web_id": sesion.sitio_web.id if sesion.sitio_web else None,
-                "time_start": sesion.time_start.strftime("%Y-%m-%d %H:%M:%S"),
-                "time_end": sesion.time_end.strftime("%Y-%m-%d %H:%M:%S"),
+                "id": sesion[0].id,
+                "sitio_web": sesion[1].main_url if sesion[1].main_url is not None else "Desconocido",
+                "time_start": sesion[0].time_start.strftime("%Y-%m-%d %H:%M:%S"),
+                "time_end": sesion[0].time_end.strftime("%Y-%m-%d %H:%M:%S"),
             })
-
+        print(session_list)
         # Enviar las sesiones formateadas al template
         return render_template('track_session.html', sessions=session_list)
 
