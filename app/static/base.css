@@ -100,3 +100,47 @@ button.tracking-inactive:hover {
     margin: 20px 0;
 }
 
+/* Botón para Activar/Desactivar Tracking */
+#toggleTrackingButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilo para el botón cuando el tracking está activado */
+.tracking-active {
+    background-color: #28a745; /* Verde */
+}
+
+/* Estilo para el botón cuando el tracking está desactivado */
+.tracking-inactive {
+    background-color: #dc3545; /* Rojo */
+}
+
+/* Botón de Desactivar Tracking */
+#disableTrackingButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+/* Estilo del botón cuando el tracking está activo */
+#disableTrackingButton.tracking-active {
+    background-color: #28a745; /* Verde */
+}
+
+/* Estilo del botón cuando el tracking está desactivado */
+#disableTrackingButton.tracking-inactive {
+    background-color: #dc3545; /* Rojo */
+}
+
+
+

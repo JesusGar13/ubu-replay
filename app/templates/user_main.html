@@ -32,6 +32,39 @@
 <div style="margin-top: 20px;">
     <button onclick="location.href='/denied_web'" style="padding: 10px 20px; font-size: 16px;">Sitios web denegados</button>
     <button onclick="location.href='/track_session'" style="padding: 10px 20px; font-size: 16px;">Track Sessions</button>
+    <button id="toggleTrackingButton" data-tracking="{{ 'true' if tracking_enabled else 'false' }}"
+            class="{{ 'tracking-active' if tracking_enabled else 'tracking-inactive' }}">
+        {{ 'Desactivar Tracking' if tracking_enabled else 'Activar Tracking' }}
+    </button>
 </div>
+
+<script>
+    const toggleTrackingButton = document.getElementById('toggleTrackingButton');
+
+    toggleTrackingButton.addEventListener('click', () => {
+        const isTrackingEnabled = toggleTrackingButton.dataset.tracking === 'true';
+
+        fetch('/toggle_tracking', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ enable: !isTrackingEnabled }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                // Cambiar el estado y texto del botón
+                toggleTrackingButton.dataset.tracking = (!isTrackingEnabled).toString();
+                toggleTrackingButton.textContent = isTrackingEnabled ? 'Activar Tracking' : 'Desactivar Tracking';
+                toggleTrackingButton.classList.toggle('tracking-active', !isTrackingEnabled);
+                toggleTrackingButton.classList.toggle('tracking-inactive', isTrackingEnabled);
+            } else {
+                alert(data.error || 'Error al cambiar el estado del tracking.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
 
 {% endblock %}

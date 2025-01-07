@@ -73,6 +73,9 @@ def create_app():
             webs.append(web)
             counts.append(count)
         webs_counts = zip(webs, counts)
+
+        # Obtener el estado del tracking
+        tracking_enabled = session.get('tracking_enabled', True)
             
         return render_template('user_main.html', webs_counts=webs_counts, user_id=user_id)   
 
@@ -82,7 +85,7 @@ def create_app():
         user_id = session.get('user_id')  
         # Verificar si el tracking está habilitado (por ejemplo, a través de una configuración en la base de datos o sesión)
         tracking_enabled = session.get('tracking_enabled', True)  
-        
+
         # Obtener el conteo de sesiones por sitio web
         tracked_sites = []
         site_sessions = db.selectAll_countSession_from_SitioWeb(user_id)
@@ -141,7 +144,9 @@ def create_app():
     def track_interactions():
         data = request.json
         db = SingleConexionBD()
-        
+        if not session.get('tracking_enabled', True):
+            return jsonify({'message': 'Tracking está desactivado. No se registrarán interacciones.'}), 200
+
         
         # Aquí debes procesar y guardar las interacciones en la base de datos
         try:
