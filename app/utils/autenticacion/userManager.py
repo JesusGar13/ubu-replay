@@ -3,8 +3,8 @@ from flask import flash, session, redirect, url_for
 from app.utils.SingleConexionBD import SingleConexionBD
 
 class UserManager:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
+        self.db = SingleConexionBD()
 
     def login_user(self, username, password):
         user = self.db.verify_user(username, password)
@@ -35,6 +35,7 @@ class UserManager:
 
     def logout_user(self):
         session.pop('logged_in', None)
+        session.pop('username', None)
         flash('Sesión cerrada correctamente')
 
 
