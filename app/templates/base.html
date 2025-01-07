@@ -3,28 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <div>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-    </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <title>{% block title %}Base Page{% endblock %}</title>
 </head>
 <body>
+    <!-- Mensajes de Flash -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-messages">
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    {% endwith %}
 
-    <main>
+    <!-- Contenido Principal -->
+    <main class="main-container">
         {% block content %}
-        <!-- Content specific to each page will be here -->
         {% endblock %}
     </main>
 
-    <footer>
+    <!-- Pie de Página -->
+    <footer class="footer">
         <p>&copy; 2024 My Website</p>
     </footer>
 </body>
