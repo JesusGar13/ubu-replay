@@ -33,7 +33,6 @@
 <table>
     <thead>
         <tr>
-            <th style="text-align: center;">Id Sesion</th>
             <th style="text-align: center;">Sitio Web</th>
             <th style="text-align: center;">Fecha Inicio</th>
             <th style="text-align: center;">Fecha Fin</th>
@@ -42,7 +41,6 @@
     <tbody>
         {% for session in sessions %}
         <tr>
-            <td>{{ session.id}}</td>
             <td>{{ session.sitio_web.split('?')[0] if '?' in session.sitio_web else session.sitio_web.split('#')[0] if '#' in session.sitio_web else session.sitio_web }}</td>
             <td>{{ session.time_start }}</td>
             <td>{{ session.time_end }}</td>
