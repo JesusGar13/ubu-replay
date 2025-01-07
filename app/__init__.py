@@ -19,21 +19,6 @@ def create_app():
         return render_template('app_main.html')
 
 
-    # Método plantilla para Login y Registro
-    class Autenticacion:
-        def manejar_solicitud(self):
-            if request.method == 'POST':
-                return self.ejecutar_autenticacion()
-            return self.renderizar_plantilla()
-
-        def ejecutar_autenticacion(self):
-            pass
-
-        def renderizar_plantilla(self):
-            pass
-
-
-
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         manejador = Login()
