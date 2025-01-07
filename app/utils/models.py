@@ -11,6 +11,9 @@ class Base(DeclarativeBase):
 
 
 class User(Base, UserMixin):
+    """
+    Modelo de usuario
+    """
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
@@ -29,6 +32,9 @@ class User(Base, UserMixin):
 
 
 class Session(Base):
+    """
+    Modelo de sesión de trackeo
+    """
     __tablename__ = "session"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
@@ -41,8 +47,10 @@ class Session(Base):
     )
 
 
-
 class SitioWeb(Base):
+    """
+    Modelo de sitio web a trackear
+    """
     __tablename__ = "sitio_web"
     id: Mapped[int] = mapped_column(primary_key=True)
     main_url: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
@@ -59,6 +67,9 @@ class SitioWeb(Base):
 
 
 class Webs(Base):
+    """
+    Modelo de subpáginas web trackeadas dentro de un sitio web
+    """
     __tablename__ = "webs"
     id: Mapped[int] = mapped_column(primary_key=True)
     sitio_web_id: Mapped[int] = mapped_column(ForeignKey("sitio_web.id"), nullable=False)
@@ -68,6 +79,9 @@ class Webs(Base):
 
 
 class SitioWebSession(Base):
+    """
+    Modelo de sesión de trackeo de sitio web
+    """
     __tablename__ = "sitiowebsession"
     id: Mapped[int] = mapped_column(primary_key=True)
     session_id: Mapped[int] = mapped_column(ForeignKey("session.id"), nullable=False)
@@ -78,6 +92,9 @@ class SitioWebSession(Base):
 
 
 class WebDenegadas(Base):
+    """
+    Modelo de páginas web denegadas
+    """
     __tablename__ = "web_denegadas"
     id: Mapped[int] = mapped_column(primary_key=True)
     sitio_web_id: Mapped[int] = mapped_column(ForeignKey("sitio_web.id"), nullable=False)
@@ -85,5 +102,3 @@ class WebDenegadas(Base):
 
     sitio_web: Mapped["SitioWeb"] = relationship(back_populates="web_denegadas")
     user: Mapped["User"] = relationship(back_populates="web_denegadas")
-
-

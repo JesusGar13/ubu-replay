@@ -10,9 +10,9 @@
         </ul>
     </nav>
 
-
     <h1>Register</h1>
     <p>¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Iniciar sesión</a></p>
+
     <form method="POST" action="{{ url_for('register') }}">
         <label for="username">Nombre de usuario:</label>
         <input type="text" id="username" name="username" required><br>
@@ -25,4 +25,5 @@
 
         <input type="submit" value="Registrarme">
     </form>
+
 {% endblock %}

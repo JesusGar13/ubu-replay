@@ -17,7 +17,6 @@
     <tbody>
         {% for site, count in webs_counts %}
             <tr>
-                <!-- Trunca la URL después del dominio para mejor visualización -->
                 <td>
                     <a href="{{ site }}" target="_blank">
                         {{ site.split('?')[0] if '?' in site else site.split('#')[0] if '#' in site else site }}
@@ -54,7 +53,6 @@
         .then(response => response.json())
         .then(data => {
             if (data.message) {
-                // Cambiar el estado y texto del botón
                 toggleTrackingButton.dataset.tracking = (!isTrackingEnabled).toString();
                 toggleTrackingButton.textContent = isTrackingEnabled ? 'Activar Tracking' : 'Desactivar Tracking';
                 toggleTrackingButton.classList.toggle('tracking-active', !isTrackingEnabled);

@@ -6,7 +6,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 
 class SingleConexionBD:
+    """
+    Clase que se encarga de gestión de la base de datos
+    """
+
     _instance = None
+
 
     def __new__(cls, db_url="sqlite:///base_de_datos.db"):
         if cls._instance is None:
@@ -14,10 +19,12 @@ class SingleConexionBD:
             cls._instance._initialize(db_url)
         return cls._instance
 
+
     def _initialize(self, db_url):
         self.db_url = db_url
         self.engine = create_engine(self.db_url, connect_args={"check_same_thread": False})
         self.Session = sessionmaker(bind=self.engine)
+
 
     def delete_all(self):
         try:
@@ -26,6 +33,7 @@ class SingleConexionBD:
         except Exception as e:
             print(f"Error al eliminar: {e}")
 
+
     def create_tablas(self):
         try:
             Base.metadata.create_all(self.engine)
@@ -33,26 +41,29 @@ class SingleConexionBD:
         except Exception as e:
             print(f"Error al crear tablas: {e}")
 
+
     def get_sesion(self):
         try:
             return self.Session()
         except Exception as e:
             print(f"Error al obtener la sesión: {e}")
             return None
+        
+    
     def close_sesion(self, sesion):
         try:
             sesion.close()
         except Exception as e:
             print(f"Error al cerrar la sesión: {e}")
 
-    ############################################################################################################
+    # Métodos para gestionar usuarios
 
     def insert_newUser(self, username, email, password):
         sesion = self.get_sesion()
         insercion = None
         try:
             consultaUser = self.select_user(email=email)
-            if consultaUser is None: # Si no existe el usuario podemos insertarlo
+            if consultaUser is None:
                 newUser = User(username=username, email=email)
                 newUser.set_password(password=password)
                 sesion.add(newUser)
@@ -97,6 +108,7 @@ class SingleConexionBD:
             self.close_sesion(sesion)
         return user_id
 
+
     def delete_all_users(self):
         sesion = self.get_sesion()
         try:
@@ -110,6 +122,7 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
         
+
     def verify_user(self, username, password):
         sesion = self.get_sesion()
         user = None
@@ -123,6 +136,7 @@ class SingleConexionBD:
             self.close_sesion(sesion)
         return None 
 
+    # Métodos para gestionar sesiones
 
     def insert_newSitioWeb(self, main_url):
         sesion = self.get_sesion()
@@ -136,6 +150,7 @@ class SingleConexionBD:
             print(f"Error de SQLAlchemy: {e}")
         finally:
             self.close_sesion(sesion)
+
 
     def select_SitioWeb(self, main_url):
         sesion = self.get_sesion()
@@ -169,28 +184,23 @@ class SingleConexionBD:
     def insert_newSession(self, user_id, time_start, time_end, main_url, urls_web):
         sesion = self.get_sesion()
         try:
-            # Comprobamos si existe el sitio web
             sitio_web = self.select_SitioWeb(main_url=main_url)
             if sitio_web is None:
-                # Inserta el sitio web si no existe
                 self.insert_newSitioWeb(main_url=main_url)
                 sitio_web = self.select_SitioWeb(main_url=main_url)
 
             sitio_Web_id = sitio_web.id
 
-            # Insertamos las webs asociadas al sitio web
             self.insert_newsWebs(sitio_web_id=sitio_Web_id, urls_web=urls_web)
 
-            # Creamos la nueva sesión
             new_session = Session(
                 user_id=user_id,            
-                time_start=datetime.strptime(time_start, '%Y-%m-%dT%H:%M:%S.%fZ'),  # Convertimos a objeto datetime
-                time_end=datetime.strptime(time_end, '%Y-%m-%dT%H:%M:%S.%fZ')       # Convertimos a objeto datetime
+                time_start=datetime.strptime(time_start, '%Y-%m-%dT%H:%M:%S.%fZ'),  
+                time_end=datetime.strptime(time_end, '%Y-%m-%dT%H:%M:%S.%fZ')
             )
             sesion.add(new_session)
-            sesion.commit()  # Guardamos la sesión para obtener su ID
+            sesion.commit()
 
-            # Relacionamos la sesión con el sitio web
             new_session_id = new_session.id
             new_sitioWebSession = SitioWebSession(
                 session_id=new_session_id,
@@ -201,12 +211,13 @@ class SingleConexionBD:
 
         except Exception as e:
             print(f"Error al insertar una nueva sesión: {e}")
-            sesion.rollback()  # Revertir cualquier cambio en caso de error
+            sesion.rollback()
         except SQLAlchemyError as e:
             print(f"Error de SQLAlchemy: {e}")
             sesion.rollback()
         finally:
             self.close_sesion(sesion)
+
 
     def get_interactions_by_session(self, session_id):
         sesion = self.get_sesion()
@@ -219,12 +230,12 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
             
+
     def selectAll_countSession_from_SitioWeb(self, user_id):
         sesion = self.get_sesion()
         sitioWeb_countSession = {}
 
         try:
-            # Definimos explícitamente la tabla base y las uniones necesarias
             sessionSitioWeb = (
                 sesion.query(Session, SitioWeb)
                 .join(SitioWebSession, Session.id == SitioWebSession.session_id)
@@ -233,7 +244,6 @@ class SingleConexionBD:
                 .all()
             )
 
-            # Contamos las sesiones por cada sitio web
             for session, sitioWeb in sessionSitioWeb:
                 if sitioWeb.main_url in sitioWeb_countSession:
                     sitioWeb_countSession[sitioWeb.main_url] += 1
@@ -260,6 +270,7 @@ class SingleConexionBD:
             self.close_sesion(sesion)
         return sessions
 
+    # Métodos para gestionar sitios web denegados
 
     def insert_sitioWeb_denegado(self, sitioWeb_id, user_id):
         sesion = self.get_sesion()
@@ -290,6 +301,7 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
 
+
     def remove_sitioWeb_denegado(self, site_id):
         sesion = self.get_sesion()
         try:
@@ -302,8 +314,8 @@ class SingleConexionBD:
             sesion.rollback()
         finally:
             self.close_sesion(sesion)
-
     
+
     def get_all_denied_sites(self):
         sesion = self.get_sesion()
         denied_sites = None
@@ -315,7 +327,7 @@ class SingleConexionBD:
             self.close_sesion(sesion)
             return denied_sites              
     
-
+    
     def selectBool_sitioWeb_denegado(self, sitioWeb_id):
         sesion = self.get_sesion()
         denegado = False
@@ -326,8 +338,3 @@ class SingleConexionBD:
         finally:
             self.close_sesion(sesion)
             return denegado 
-
-    
-
-        
-

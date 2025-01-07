@@ -19,7 +19,7 @@
             {% endif %}
         </ul>
     </nav>
-    <!-- Mensajes de Flash -->
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="flash-messages">
@@ -32,17 +32,15 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Contenido Principal -->
     <main class="main-container">
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- Pie de Página -->
     <footer class="footer">
         <p>&copy; 2024 My Website</p>
     </footer>
-    <!-- Bloque para Scripts -->
+
     {% block scripts %}
     {% endblock %}
     

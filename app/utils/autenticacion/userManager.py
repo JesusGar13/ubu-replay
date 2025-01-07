@@ -3,6 +3,9 @@ from flask import flash, session, redirect, url_for
 from app.utils.SingleConexionBD import SingleConexionBD
 
 class UserManager:
+    """
+    Clase que se encarga de gestionar las operaciones de autenticación de los usuarios
+    """
     def __init__(self):
         self.db = SingleConexionBD()
 

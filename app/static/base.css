@@ -1,23 +1,35 @@
-/* General */
+:root {
+    --color-primary: #007bff;
+    --color-primary-hover: #0056b3;
+    --color-success: #28a745;
+    --color-success-hover: #218838;
+    --color-danger: #dc3545;
+    --color-danger-hover: #c82333;
+    --color-light: #f4f4f9;
+    --color-dark: #333;
+    --color-white: #fff;
+    --color-gray: #d6d6d6;
+    --color-gray-dark: #666;
+}
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
-    color: #333;
+    background-color: var(--color-light);
+    color: var(--color-dark);
     line-height: 1.6;
 }
 
-/* Flash Messages */
 .flash-messages {
     margin: 20px auto;
     max-width: 600px;
     padding: 10px;
-    border: 1px solid #e74c3c;
+    border: 1px solid var(--color-danger);
     background-color: #fbe3e3;
     border-radius: 5px;
     text-align: center;
-    color: #e74c3c;
+    color: var(--color-danger);
     font-weight: bold;
 }
 
@@ -31,116 +43,64 @@ body {
     margin: 5px 0;
 }
 
-/* Main Content */
 .main-container {
     max-width: 800px;
     margin: 40px auto;
     padding: 20px;
-    background-color: #fff;
+    background-color: var(--color-white);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer */
 .footer {
     text-align: center;
     padding: 10px;
-    background-color: #333;
-    color: #fff;
+    background-color: var(--color-dark);
+    color: var(--color-white);
     position: relative;
     bottom: 0;
     width: 100%;
 }
-/* Botones Generales */
+
 button {
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: 1rem;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #007BFF; /* Azul */
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-white);
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #0056b3; /* Azul oscuro en hover */
+    background-color: var(--color-primary-hover);
     transform: scale(1.05);
 }
 
 button:disabled {
-    background-color: #d6d6d6;
+    background-color: var(--color-gray);
     cursor: not-allowed;
-    color: #666;
+    color: var(--color-gray-dark);
 }
 
-/* Botón de Tracking Activo */
 button.tracking-active {
-    background-color: #28a745; /* Verde */
-    color: white;
+    background-color: var(--color-success);
 }
 
 button.tracking-active:hover {
-    background-color: #218838; /* Verde oscuro */
+    background-color: var(--color-success-hover);
 }
 
-/* Botón de Tracking Inactivo */
 button.tracking-inactive {
-    background-color: #dc3545; /* Rojo */
-    color: white;
+    background-color: var(--color-danger);
 }
 
 button.tracking-inactive:hover {
-    background-color: #c82333; /* Rojo oscuro */
+    background-color: var(--color-danger-hover);
 }
 
-/* Contenedor del Botón */
 .tracking-container {
     text-align: center;
     margin: 20px 0;
 }
-
-/* Botón para Activar/Desactivar Tracking */
-#toggleTrackingButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-    transition: background-color 0.3s ease;
-}
-
-/* Estilo para el botón cuando el tracking está activado */
-.tracking-active {
-    background-color: #28a745; /* Verde */
-}
-
-/* Estilo para el botón cuando el tracking está desactivado */
-.tracking-inactive {
-    background-color: #dc3545; /* Rojo */
-}
-
-/* Botón de Desactivar Tracking */
-#disableTrackingButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-    transition: background-color 0.3s ease;
-}
-
-/* Estilo del botón cuando el tracking está activo */
-#disableTrackingButton.tracking-active {
-    background-color: #28a745; /* Verde */
-}
-
-/* Estilo del botón cuando el tracking está desactivado */
-#disableTrackingButton.tracking-inactive {
-    background-color: #dc3545; /* Rojo */
-}
-
-
-
