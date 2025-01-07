@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
-from app.utils.userManager import UserManager
 from app.utils.SingleConexionBD import SingleConexionBD
+from app.utils.autenticacion.plantillaAutenticacion import Login, Registro, Logout
 from app.utils.models import Session
 from flask import flash
 
@@ -12,7 +12,7 @@ def create_app():
     db = SingleConexionBD()
     db.create_tablas()
     #db.delete_all_users()
-    user_manager = UserManager(db)
+    
 
     @app.route('/')
     def home():
@@ -32,28 +32,7 @@ def create_app():
         def renderizar_plantilla(self):
             pass
 
-    class Login(Autenticacion):
-        def ejecutar_autenticacion(self):
-            username = request.form['username']
-            password = request.form['password']
-            if user_manager.login_user(username, password):
-                return redirect(url_for('user_main'))
-            return self.renderizar_plantilla()
 
-        def renderizar_plantilla(self):
-            return render_template('login.html')
-
-    class Registro(Autenticacion):
-        def ejecutar_autenticacion(self):
-            username = request.form['username']
-            email = request.form['email']
-            password = request.form['password']
-            if user_manager.register_user(username, email, password):
-                return redirect(url_for('login'))
-            return self.renderizar_plantilla()
-
-        def renderizar_plantilla(self):
-            return render_template('register.html')
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -65,6 +44,10 @@ def create_app():
         manejador = Registro()
         return manejador.manejar_solicitud()   
 
+    @app.route('/logout', methods=['GET', 'POST'])
+    def logout():
+        manejador = Logout()
+        return manejador.manejar_solicitud()
 
     '''
     @app.route('/login', methods=['GET', 'POST'])
@@ -88,15 +71,12 @@ def create_app():
 
     '''
 
-    @app.route('/logout', methods=['GET', 'POST'])
-    def logout():
-        if request.method == 'POST':
-            user_manager.logout_user()
-            return redirect(url_for('home'))
-        return render_template('logout.html')
 
     @app.route('/user_main')
     def user_main():
+        if 'logged_in' not in session:
+            return redirect(url_for('login')) 
+
         db = SingleConexionBD()
 
         # Obtener el conteo de sesiones por sitio web
